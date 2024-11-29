@@ -11,19 +11,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ProductReader extends JdbcCursorItemReader<Product> implements ItemReader<Product> {
-    public void reader(@Autowired DataSource primaryDataSource) {
-        setDataSource(primaryDataSource);
+    public void reader(@Autowired DataSource dataSource) {
+        setDataSource(dataSource);
         setSql("SELECT * FROM Product");
-        setFetchSize(100);
+        setFetchSize(10);
         setRowMapper(new ProductRowMapper());
     }
 
     public class ProductRowMapper implements RowMapper<Product> {
         @Override
         public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-            //create Employee object
             Product product  = new Product();
-            //reading data from ResultSet and write to Employee object
+
             product.setId(rs.getLong("id"));
             product.setName(rs.getString("name"));
             product.setPrice(rs.getLong("price"));

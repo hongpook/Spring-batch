@@ -22,7 +22,7 @@ public class ProductProcessor implements ItemProcessor<Product,Product> {
 
         prd.setId(item.getId());
         prd.setName(item.getName());
-        prd.setPrice(item.getPrice());
+        prd.setPrice((long) (item.getPrice() - 500));
 
         return prd;
     }
