@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: DB_test
+    ports:
+      - "5433:5432"  # Host port 5433 -> Container port 5432 (Postgres sử dụng cổng mặc định là 5432)
+
+  maildev:
+    image: maildev/maildev
+    restart: always
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - maildev
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_MAIL_HOST=maildev
+      - SPRING_MAIL_PORT=1025
+      - SPRING_MAIL_USERNAME=phucdau2k3@gmail.com
+      - SPRING_MAIL_PASSWORD=12345
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/DB_test
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345

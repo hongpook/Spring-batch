@@ -27,38 +27,35 @@ import javax.sql.DataSource;
 @Configuration
 
 public class CsvBatchConfig {
-//    @Value("${file.input}")
-//    private String source;
+    @Value("${file.input}")
+    private String source;
     @Autowired
     private ProductRepository productRepository;
-
-
     @Autowired
     private DataSource dataSource;
 
     //item reader
-//    @Bean
-//    public FlatFileItemReader<Product> productItemReader() {
-//        return new FlatFileItemReaderBuilder<Product>().name("productItemReader")
-//                .resource(new ClassPathResource(source))
-//                .linesToSkip(1)
-//                .delimited()
-//                .names(new String[]{"id", "name", "price"})
-//                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-//                    setTargetType(Product.class);
-//                }})
-//                .build();
-//    }
+    @Bean
+    public FlatFileItemReader<Product> productItemReader() {
+        return new FlatFileItemReaderBuilder<Product>().name("productItemReader")
+                .resource(new ClassPathResource(source))
+                .linesToSkip(1)
+                .delimited()
+                .names(new String[]{"id", "name", "price"})
+                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+                    setTargetType(Product.class);
+                }})
+                .build();
+    }
 
     //writer
-
-//    @Bean
-//    public RepositoryItemWriter<Product> productWriter() {
-//        RepositoryItemWriter<Product> repositoryItemWriter = new RepositoryItemWriter<>();
-//        repositoryItemWriter.setRepository(productRepository);
-//        repositoryItemWriter.setMethodName("save");
-//        return repositoryItemWriter;
-//    }
+    @Bean
+    public RepositoryItemWriter<Product> productWriter() {
+        RepositoryItemWriter<Product> repositoryItemWriter = new RepositoryItemWriter<>();
+        repositoryItemWriter.setRepository(productRepository);
+        repositoryItemWriter.setMethodName("save");
+        return repositoryItemWriter;
+    }
 
     //processor
     @Bean
@@ -80,7 +77,7 @@ public class CsvBatchConfig {
     //step
     @Bean
     public Step stepProduct(JobRepository jobRepository , PlatformTransactionManager transactionManage) {
-        var step = new StepBuilder("stepProduct", jobRepository)
+        Step step = new StepBuilder("stepProduct", jobRepository)
                 .<Product, Product>chunk(10 , transactionManage)
                 .reader(productReader())
                 .processor(createItemProcessor())
@@ -96,7 +93,7 @@ public class CsvBatchConfig {
 
     @Bean
     public Step stepTest(JobRepository jobRepository , PlatformTransactionManager transactionManage) {
-        var step = new StepBuilder("stepTest", jobRepository)
+        Step step = new StepBuilder("stepTest", jobRepository)
                 .tasklet(taskletTest(), transactionManage)
                 .build();
         return step;
